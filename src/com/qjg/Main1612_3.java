@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main1612_3 {
-	
-	
 	public static class Hero{
 		int id ;
 		int health;
@@ -43,34 +41,44 @@ public class Main1612_3 {
 				temp.position = i+1;
 			}
 		}
-		
+		//从80分到100分之间，不曾觉得自己理解的召唤随从有问题
 		public Follower summon(int position,int health,int attack) {
-			int positionWantMove = position-1;//原来的英雄位置
-			int positionNew = FindFollowerPosition(health,attack);
-			if(positionNew == -1) {
-				followers.add(new Follower(followers.size()-1,health,attack));
-			}
-			
-			positionNew = FindFollowerPosition(health,attack);
-			//开始召唤英雄
-			Follower beSummonFollow = followers.get(positionNew);
-			for(int i = positionNew-1;i>=positionWantMove;i--){
-				followers.get(i).position = i+1;
-			}
-			
-			beSummonFollow.position = positionWantMove;
-			
-			Collections.sort(followers, new Comparator<Follower>(){
-				@Override
-				public int compare(Follower o1, Follower o2) {
-					if(o1.position>o2.position){
-						return 1;
-					}else{
-						return -1;
-					}
-				}
-			});
-			return beSummonFollow;
+			followers.add(position-1, new Follower(health,attack));
+			return followers.get(position-1);
+//			int positionWantMove = position-1;//原来的英雄位置
+//			int positionNew = FindFollowerPosition(health,attack);
+//			if(positionNew == -1) {
+//				if(followers.size()<7){// 当本方战场有 7 个随从时，不会再召唤新的随从。
+//					followers.add(new Follower(followers.size()-1,health,attack));
+//				}else{
+//					return null;
+//				}
+//			}
+//			
+//			//即如果当前本方战场上有 m 个随从，则召唤随从的位置一定在 1 到 m + 1 之间，其中 1 表示战场最左边的位置，m + 1 表示战场最右边的位置。
+//			if(positionWantMove<0 || positionWantMove>=followers.size()){
+//				return null;
+//			}
+//			
+//			positionNew = FindFollowerPosition(health,attack);
+//			//开始召唤英雄
+//			Follower beSummonFollow = followers.get(positionNew);
+//			for(int i = positionNew-1;i>=positionWantMove;i--){
+//				followers.get(i).position = i+1;
+//			}
+//			
+//			beSummonFollow.position = positionWantMove;
+//			Collections.sort(followers, new Comparator<Follower>(){
+//				@Override
+//				public int compare(Follower o1, Follower o2) {
+//					if(o1.position>o2.position){
+//						return 1;
+//					}else{
+//						return -1;
+//					}
+//				}
+//			});
+//			return beSummonFollow;
 		}
 		
 		private int FindFollowerPosition(int health2, int attack2) {
@@ -86,7 +94,7 @@ public class Main1612_3 {
 		}
 
 		public Follower getFollower(int position){
-			if(position<=followers.size()){
+			if(1<=position && position<=followers.size()){
 				return followers.get(position-1);
 			}else{
 				return null;
@@ -105,6 +113,10 @@ public class Main1612_3 {
 			this.health = health;
 			this.attack = attack;
 		}
+		public Follower(int health, int attack) {
+			this.health = health;
+			this.attack = attack;
+		}
 		public void attack(Follower other){
 			other.health -= this.attack;
 			this.health -= other.attack;
@@ -119,7 +131,6 @@ public class Main1612_3 {
 //			other.health -= this.attack;
 //			this.health -= other.attack;
 //		}
-		
 		public boolean isDeath(){
 			if(health<=0){
 				return true;
@@ -163,14 +174,14 @@ public class Main1612_3 {
 		int size = hero1.followers.size();
 		System.out.print(size+" ");
 		for(int i=0;i<size;i++){
-			System.out.print(hero1.followers.get(i).health);
+			System.out.print(hero1.followers.get(i).health+" ");
 		}
 		System.out.println();
 		System.out.println(hero2.health);
 		size = hero2.followers.size();
 		System.out.print(size+" ");
 		for(int i=0;i<size;i++){
-			System.out.print(hero2.followers.get(i).health);
+			System.out.print(hero2.followers.get(i).health+" ");
 		}
 	}
 
@@ -201,6 +212,7 @@ public class Main1612_3 {
 			int id2 = Integer.parseInt(strs[2]);
 			if(token == Token.First){
 				Follower  myFollower = hero1.getFollower(id1);
+				if(myFollower==null || (myFollower!=null && myFollower.attack<=0)) return ;
 				if(id2 == 0){
 					myFollower.attack(hero2);
 					if(hero2.health <= 0){
@@ -216,6 +228,7 @@ public class Main1612_3 {
 				}
 			}else{
 				Follower  myFollower = hero2.getFollower(id1);
+				if(myFollower==null || myFollower.attack<=0) return ;//发起攻击的角色攻击力大于 0
 				if(id2 == 0){
 					myFollower.attack(hero1);
 					if(hero1.health <=0){
@@ -223,7 +236,7 @@ public class Main1612_3 {
 					}
 				}else{
 					Follower other = hero1.getFollower(id2);
-					if(other!=null){
+					if(other!=null){// 发起攻击和被攻击的角色一定存在
 						myFollower.attack(other);
 					}else{
 						return;
@@ -239,8 +252,5 @@ public class Main1612_3 {
 				token = Token.First;
 			}
 		}
-		
 	}
-
-
 }
